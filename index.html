@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Central de Chamados · Mart Minas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --void: #050814;
+  --base: #0a0e1f;
+  --panel: #0f1428;
+  --panel2: #141a30;
+  --rim: #1c2240;
+  --rim2: #28305a;
+  --ice: #e8eeff;
+  --mist: #8b96bf;
+  --fog: #4a5380;
+  --neon: #3d7fff;
+  --neon2: #00c9ff;
+  --neon3: #5ab8ff;
+  --hot: #ff4566;
+  --hot2: #ff7a92;
+  --warm: #ffb347;
+  --mint: #00e59b;
+  --purple: #a76dff;
+  --gold: #ffd166;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-ui: 'Outfit', sans-serif;
+}
+
+html, body { height: 100%; }
+body {
+  background: radial-gradient(ellipse at top, #0a1230 0%, var(--void) 60%);
+  color: var(--ice);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.25;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 26px 14px;
+  position: relative; z-index: 10;
+}
+.brand-block { display: flex; align-items: center; gap: 18px; }
+.brand {
+  font-family: var(--font-display);
+  font-size: 32px; letter-spacing: 3px;
+  background: linear-gradient(90deg, var(--neon), var(--neon2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.brand-sep { width: 1px; height: 32px; background: var(--rim2); }
+.brand-sub {
+  font-size: 11px; color: var(--mist);
+  letter-spacing: 2px; text-transform: uppercase; font-weight: 500;
+}
+.clock-block { text-align: right; }
+.clock {
+  font-family: var(--font-display);
+  font-size: 30px; letter-spacing: 2.5px;
+  color: var(--ice);
+  line-height: 1;
+}
+.clock-date {
+  font-size: 11px; color: var(--mist);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 4px;
+}
+.status-block {
+  text-align: right;
+  border-left: 1px solid var(--rim2);
+  padding-left: 18px;
+  margin-left: 18px;
+}
+.status-line {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 6px;
+  font-size: 11px; color: var(--mint);
+  letter-spacing: 1.5px; font-weight: 600;
+  text-transform: uppercase;
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px var(--mint); animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.last-sync {
+  font-size: 10px; color: var(--fog);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 4px; font-weight: 600;
+}
+.topbar-right { display: flex; align-items: flex-start; }
+
+/* WRAP */
+.wrap {
+  position: relative; z-index: 1;
+  padding: 0 22px 22px;
+  max-width: 1920px; margin: 0 auto;
+}
+
+/* PANEL BASE */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  border-radius: 12px;
+  padding: 14px 18px;
+  position: relative;
+}
+.panel-head {
+  display: flex; align-items: center;
+  gap: 8px;
+  font-size: 11px; letter-spacing: 2px;
+  color: var(--mist);
+  text-transform: uppercase; font-weight: 700;
+  margin-bottom: 12px;
+}
+.panel-head::before {
+  content: ''; width: 3px; height: 14px;
+  background: var(--neon);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--neon);
+}
+
+/* TOP ROW — 4 cards horizontais */
+.top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.kpi-card {
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  border-radius: 12px;
+  padding: 10px 16px 14px;
+}
+.kpi-card-title {
+  text-align: center;
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--mist);
+  text-transform: uppercase; font-weight: 700;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rim);
+  margin-bottom: 12px;
+}
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.kpi-cell { text-align: center; }
+.kpi-cell-label {
+  font-size: 9px; letter-spacing: 1.5px;
+  color: var(--fog);
+  text-transform: uppercase; font-weight: 700;
+  margin-bottom: 2px;
+}
+.kpi-cell-value {
+  font-family: var(--font-display);
+  font-size: 26px; letter-spacing: 0.8px;
+  line-height: 1;
+}
+.kpi-cell-value.blue { color: var(--neon2); }
+.kpi-cell-value.green { color: var(--mint); }
+.kpi-cell-value.orange { color: var(--warm); }
+.kpi-cell-value.red { color: var(--hot); }
+.kpi-cell-value.gold { color: var(--gold); }
+.kpi-cell-value.purple { color: var(--purple); }
+.kpi-cell-value sub {
+  font-size: 12px; color: var(--fog); margin-left: 2px;
+  vertical-align: baseline;
+}
+
+/* MAIN GRID — 3 colunas × 2 linhas (6 painéis uniformes) */
+.main {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, minmax(340px, 1fr));
+  gap: 12px;
+}
+
+/* DONUT */
+.donut-panel { display: flex; flex-direction: column; min-height: 0; }
+.donut-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+  padding: 4px 0 6px;
+  min-height: 0;
+}
+.donut-canvas-box {
+  position: relative;
+  width: 180px; height: 180px;
+  flex-shrink: 0;
+}
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.donut-center-value {
+  font-family: var(--font-display);
+  font-size: 40px; line-height: 1;
+  color: var(--neon2); letter-spacing: 1px;
+}
+.donut-center-label {
+  font-size: 9px; letter-spacing: 1.5px;
+  color: var(--mist); text-transform: uppercase;
+  font-weight: 700; margin-top: 4px;
+}
+.donut-legend {
+  display: flex; flex-direction: column;
+  gap: 6px; width: 100%;
+}
+.donut-legend-item {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+}
+.donut-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+.donut-legend-name { color: var(--mist); font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; }
+.donut-legend-val {
+  font-family: var(--font-display);
+  font-size: 18px; color: var(--ice);
+  letter-spacing: 0.5px;
+}
+
+/* mini line chart panel */
+.mini-chart-panel { display: flex; flex-direction: column; min-height: 0; }
+.mini-chart-box { flex: 1; position: relative; min-height: 0; }
+
+/* CÉLULA — lista */
+.celula-list-panel { display: flex; flex-direction: column; min-height: 0; }
+.celula-list-body {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: space-around;
+  padding: 4px 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+.celula-row {
+  display: grid;
+  grid-template-columns: 170px 1fr 80px;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.celula-row-label {
+  font-size: 12px; color: var(--ice);
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-align: left;
+}
+.celula-row-bar-bg {
+  height: 26px;
+  background: var(--panel2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.celula-row-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon), var(--neon2));
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,201,255,0.4);
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+}
+.celula-row-val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--ice);
+  letter-spacing: 0.5px;
+  text-align: right;
+}
+
+/* GRUPO % ENCERRAMENTO */
+.grupo-pct-panel { display: flex; flex-direction: column; min-height: 0; }
+.grupo-pct-body {
+  flex: 1; overflow-y: auto;
+  padding-right: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 18px;
+  align-content: start;
+}
+.grupo-pct-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 50px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+}
+.grupo-pct-label {
+  font-size: 11px; color: var(--ice);
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-align: right;
+}
+.grupo-pct-bar-bg {
+  height: 8px;
+  background: var(--panel2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.grupo-pct-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+}
+.grupo-pct-bar-fill.good { background: linear-gradient(90deg, #00b87a, #00e59b); box-shadow: 0 0 6px rgba(0,229,155,0.4); }
+.grupo-pct-bar-fill.mid { background: linear-gradient(90deg, #d99326, #ffb347); box-shadow: 0 0 6px rgba(255,179,71,0.4); }
+.grupo-pct-bar-fill.bad { background: linear-gradient(90deg, #d23a55, #ff4566); box-shadow: 0 0 6px rgba(255,69,102,0.4); }
+.grupo-pct-val {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  text-align: right;
+}
+.grupo-pct-val.good { color: var(--mint); }
+.grupo-pct-val.mid { color: var(--warm); }
+.grupo-pct-val.bad { color: var(--hot); }
+
+/* COMPARE 25x26 */
+.compare-panel { display: flex; flex-direction: column; min-height: 0; }
+.compare-box { flex: 1; position: relative; min-height: 0; }
+
+.critical-panel { display: flex; flex-direction: column; min-height: 0; }
+.critical-body { flex: 1; display: flex; flex-direction: column; justify-content: space-around; padding: 4px 0; min-height: 0; overflow: hidden; }
+.critical-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 70px;
+  align-items: center;
+  gap: 12px;
+}
+.critical-label {
+  font-size: 12px; color: var(--ice);
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-align: left;
+}
+.critical-bar-bg {
+  height: 26px;
+  background: var(--panel2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.critical-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d99326, #ffb347);
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(255,179,71,0.4);
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+}
+.critical-val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--warm);
+  letter-spacing: 0.5px;
+  text-align: right;
+}
+
+/* LOADER / ERROR */
+.loader {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(5,8,20,0.96);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px;
+}
+.loader-spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--rim);
+  border-top-color: var(--neon);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text {
+  font-family: var(--font-display);
+  font-size: 18px; letter-spacing: 3px;
+  color: var(--mist);
+}
+.error-box {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(5,8,20,0.96);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; padding: 40px;
+}
+.error-box.show { display: flex; }
+.error-title { font-family: var(--font-display); font-size: 32px; color: var(--hot); letter-spacing: 2px; }
+.error-msg { color: var(--mist); font-size: 14px; text-align: center; max-width: 600px; line-height: 1.6; white-space: pre-line; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rim2); border-radius: 3px; }
+
+.empty {
+  display: flex; align-items: center; justify-content: center;
+  height: 100%; min-height: 120px;
+  color: var(--fog);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 1500px) {
+  .top-row { grid-template-columns: 1fr 1fr; }
+  .main { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, minmax(320px, 1fr)); }
+}
+@media (max-width: 1000px) {
+  .main { grid-template-columns: 1fr; grid-template-rows: none; }
+  .grupo-pct-body { grid-template-columns: 1fr; }
+}
+@media (max-width: 800px) {
+  .top-row { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: 1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand-block">
+    <div class="brand">CENTRAL DE CHAMADOS</div>
+    <div class="brand-sep"></div>
+    <div class="brand-sub">Desenvolvido por Wendell França</div>
+  </div>
+  <div class="topbar-right">
+    <div class="clock-block">
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="clock-date" id="clock-date">—</div>
+    </div>
+    <div class="status-block">
+      <div class="status-line"><span class="status-dot"></span>ONLINE</div>
+      <div class="last-sync" id="last-sync">CARREGANDO</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+
+  <!-- TOP KPI ROW -->
+  <div class="top-row">
+    <div class="kpi-card">
+      <div class="kpi-card-title">Total Consolidado</div>
+      <div class="kpi-row">
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Total</div>
+          <div class="kpi-cell-value blue" id="t-total">0</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Encerrados</div>
+          <div class="kpi-cell-value green" id="t-enc">0</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Em Aberto</div>
+          <div class="kpi-cell-value orange" id="t-ab">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card-title">2025</div>
+      <div class="kpi-row">
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Total</div>
+          <div class="kpi-cell-value blue" id="t25-total">0</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Encerrados</div>
+          <div class="kpi-cell-value green" id="t25-enc">0</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Em Aberto</div>
+          <div class="kpi-cell-value orange" id="t25-ab">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card-title">2026</div>
+      <div class="kpi-row">
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Total</div>
+          <div class="kpi-cell-value blue" id="t26-total">0</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Encerrados</div>
+          <div class="kpi-cell-value green" id="t26-enc">0</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">Em Aberto</div>
+          <div class="kpi-cell-value orange" id="t26-ab">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card-title">Indicadores</div>
+      <div class="kpi-row">
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">% Total</div>
+          <div class="kpi-cell-value blue" id="ind-pct-total">100%</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">% Encerrados</div>
+          <div class="kpi-cell-value green" id="ind-pct-enc">0%</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-cell-label">% Em Aberto</div>
+          <div class="kpi-cell-value orange" id="ind-pct-ab">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID 3x2 -->
+  <div class="main">
+
+    <div class="panel donut-panel">
+      <div class="panel-head">Distribuição por Status</div>
+      <div class="donut-wrap">
+        <div class="donut-canvas-box">
+          <canvas id="donut-status"></canvas>
+          <div class="donut-center">
+            <div class="donut-center-value" id="donut-pct">0%</div>
+            <div class="donut-center-label">Encerrados</div>
+          </div>
+        </div>
+        <div class="donut-legend" id="donut-status-legend"></div>
+      </div>
+    </div>
+
+    <div class="panel celula-list-panel">
+      <div class="panel-head">Células · Ranking por Volume</div>
+      <div class="celula-list-body" id="celula-list"></div>
+    </div>
+
+    <div class="panel compare-panel">
+      <div class="panel-head">2025 × 2026</div>
+      <div class="compare-box">
+        <canvas id="compare-chart"></canvas>
+      </div>
+    </div>
+
+    <div class="panel mini-chart-panel">
+      <div class="panel-head">% SLA Cumprido por Mês · 2025 × 2026</div>
+      <div class="mini-chart-box">
+        <canvas id="mini-chart"></canvas>
+      </div>
+    </div>
+
+    <div class="panel grupo-pct-panel">
+      <div class="panel-head">% Encerramento por Grupo de Serviço</div>
+      <div class="grupo-pct-body" id="grupo-pct-list"></div>
+    </div>
+
+    <div class="panel critical-panel">
+      <div class="panel-head">Total Aberto · 2026</div>
+      <div class="critical-body" id="critical-list"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="loader" id="loader">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">CARREGANDO DADOS</div>
+</div>
+
+<div class="error-box" id="error-box">
+  <div class="error-title">⚠ ERRO</div>
+  <div class="error-msg" id="error-msg"></div>
+</div>
+
+<script>
+const SHEETS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhU7rDjsYJkZgktPCMTSjAuJnmyR4kGyPDxGEL3fJ2nneFd5u2Kqy0WAdUpsJluVSBZOeopBJemOw3/pub?gid=0&single=true&output=csv';
+const REFRESH_MINUTES = 5;
+
+let DATA = [];
+let CHARTS = {};
+
+function parseCSV(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = []; let row = []; let field = ''; let inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') { if (text[i+1] === '"') { field += '"'; i++; } else inQ = false; }
+      else field += c;
+    } else {
+      if (c === '"') inQ = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\n') { row.push(field); field = ''; rows.push(row); row = []; }
+      else if (c === '\r') {}
+      else field += c;
+    }
+  }
+  if (field !== '' || row.length > 0) { row.push(field); rows.push(row); }
+  if (rows.length === 0) return [];
+  const headers = rows[0].map(h => h.trim());
+  const data = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (r.length === 1 && r[0].trim() === '') continue;
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = (r[idx] !== undefined ? String(r[idx]).trim().replace(/\s+/g, ' ') : ''); });
+    data.push(obj);
+  }
+  return data;
+}
+
+function normKey(k) {
+  return String(k || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim().replace(/\s+/g, ' ');
+}
+function pick(row, ...keys) {
+  if (!row.__norm) {
+    const m = {};
+    Object.keys(row).forEach(k => { m[normKey(k)] = row[k]; });
+    Object.defineProperty(row, '__norm', { value: m, enumerable: false });
+  }
+  for (const k of keys) {
+    const v = row.__norm[normKey(k)];
+    if (v !== undefined && v !== null && String(v).trim() !== '') return v;
+  }
+  return '';
+}
+function toISODate(v) {
+  if (!v) return '';
+  const s = String(v).trim();
+  if (!s) return '';
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (m) {
+    const d = m[1].padStart(2, '0');
+    const mo = m[2].padStart(2, '0');
+    let y = m[3];
+    if (y.length === 2) y = (parseInt(y) > 50 ? '19' : '20') + y;
+    return y + '-' + mo + '-' + d;
+  }
+  return s.slice(0, 10);
+}
+
+function parseSLA(v) {
+  if (v === '' || v === null || v === undefined) return null;
+  let s = String(v).trim();
+  if (!s) return null;
+  // remove "%" se presente
+  const hasPct = s.indexOf('%') !== -1;
+  s = s.replace('%', '').trim();
+  if (s.indexOf(',') !== -1) s = s.replace(/\./g, '').replace(',', '.');
+  const n = Number(s);
+  if (isNaN(n)) return null;
+  // normaliza para escala 0..1+ (1 = 100%). Aceita 0.85, 85, 85%, 1.23, 123, 123%
+  if (hasPct || n > 5) return n / 100;
+  return n;
+}
+
+function mapRow(r) {
+  const codigo = String(pick(r, 'CÓDIGO', 'CODIGO', 'Código')).trim();
+  if (!codigo) return null;
+  const grupo = String(pick(r, 'GRUPO', 'Grupo')).split('/').pop().trim();
+  const statusC = String(pick(r, 'STATUS C', 'STATUSC', 'Status C')).toUpperCase().trim();
+  const abertura = toISODate(pick(r, 'ABERTURA', 'Abertura'));
+  let ano = String(pick(r, 'ANO', 'Ano')).trim();
+  if (!ano && abertura) ano = abertura.slice(0, 4);
+  ano = String(ano).replace(/\D/g, '').slice(0, 4);
+  const mes = abertura ? parseInt(abertura.slice(5, 7), 10) : null;
+  return {
+    codigo,
+    celula: String(pick(r, 'CELULA', 'CÉLULA', 'Celula', 'Célula')).trim() || '—',
+    grupoC: String(pick(r, 'GRUPO C', 'GRUPOC', 'Grupo C')).trim() || grupo || '—',
+    statusC,
+    sla: parseSLA(pick(r, 'SLA', 'Sla')),
+    ano,
+    mes
+  };
+}
+
+function normStatus(s) {
+  if (s === 'CANCELADOS') return 'CANCELADO';
+  return s;
+}
+
+function isEmptyLabel(s) {
+  if (!s) return true;
+  const v = String(s).trim();
+  if (!v) return true;
+  if (v === '—' || v === '-' || v === '–' || v === '?' || v.toUpperCase() === 'N/A') return true;
+  return false;
+}
+
+function aggregate(rows) {
+  const kpi = { ABERTOS: 0, ENCERRADOS: 0, CANCELADO: 0, TOTAL: rows.length };
+  const byCelula = {};
+  const byGrupo = {};
+  for (const r of rows) {
+    const st = normStatus(r.statusC);
+    if (kpi[st] !== undefined) kpi[st]++;
+    if (st === 'ABERTOS' || st === 'ENCERRADOS' || st === 'CANCELADO') {
+      if (!isEmptyLabel(r.celula)) {
+        if (!byCelula[r.celula]) byCelula[r.celula] = { ABERTOS: 0, ENCERRADOS: 0, CANCELADO: 0, total: 0 };
+        byCelula[r.celula][st]++;
+        byCelula[r.celula].total++;
+      }
+      if (!isEmptyLabel(r.grupoC)) {
+        if (!byGrupo[r.grupoC]) byGrupo[r.grupoC] = { ABERTOS: 0, ENCERRADOS: 0, CANCELADO: 0, total: 0 };
+        byGrupo[r.grupoC][st]++;
+        byGrupo[r.grupoC].total++;
+      }
+    }
+  }
+  return { kpi, byCelula, byGrupo };
+}
+
+function fmtNum(n) {
+  return new Intl.NumberFormat('pt-BR').format(n);
+}
+
+function renderKPIs(all, a25, a26) {
+  document.getElementById('t-total').textContent = fmtNum(all.kpi.TOTAL);
+  document.getElementById('t-enc').textContent = fmtNum(all.kpi.ENCERRADOS);
+  document.getElementById('t-ab').textContent = fmtNum(all.kpi.ABERTOS);
+  document.getElementById('t25-total').textContent = fmtNum(a25.kpi.TOTAL);
+  document.getElementById('t25-enc').textContent = fmtNum(a25.kpi.ENCERRADOS);
+  document.getElementById('t25-ab').textContent = fmtNum(a25.kpi.ABERTOS);
+  document.getElementById('t26-total').textContent = fmtNum(a26.kpi.TOTAL);
+  document.getElementById('t26-enc').textContent = fmtNum(a26.kpi.ENCERRADOS);
+  document.getElementById('t26-ab').textContent = fmtNum(a26.kpi.ABERTOS);
+  const pctEnc = all.kpi.TOTAL ? (all.kpi.ENCERRADOS / all.kpi.TOTAL * 100) : 0;
+  const pctAb = all.kpi.TOTAL ? (all.kpi.ABERTOS / all.kpi.TOTAL * 100) : 0;
+  document.getElementById('ind-pct-total').textContent = '100%';
+  document.getElementById('ind-pct-enc').textContent = pctEnc.toFixed(1) + '%';
+  document.getElementById('ind-pct-ab').textContent = pctAb.toFixed(1) + '%';
+}
+
+function renderDonutStatus(all) {
+  const pct = all.kpi.TOTAL ? (all.kpi.ENCERRADOS / all.kpi.TOTAL * 100) : 0;
+  document.getElementById('donut-pct').textContent = pct.toFixed(1) + '%';
+
+  if (CHARTS.donutStatus) { CHARTS.donutStatus.destroy(); }
+  const ctx = document.getElementById('donut-status');
+  CHARTS.donutStatus = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Encerrados', 'Em Aberto', 'Cancelados'],
+      datasets: [{
+        data: [all.kpi.ENCERRADOS, all.kpi.ABERTOS, all.kpi.CANCELADO],
+        backgroundColor: ['#00e59b', '#ffb347', '#ff4566'],
+        borderColor: '#0f1428',
+        borderWidth: 3,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '72%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0a0e1f',
+          borderColor: '#1c2240',
+          borderWidth: 1,
+          titleColor: '#e8eeff',
+          bodyColor: '#8b96bf',
+          padding: 10,
+          callbacks: {
+            label: function(c) {
+              const tot = c.dataset.data.reduce((s, n) => s + n, 0) || 1;
+              const p = (c.parsed / tot * 100).toFixed(1);
+              return c.label + ': ' + fmtNum(c.parsed) + ' (' + p + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // legenda
+  const leg = document.getElementById('donut-status-legend');
+  leg.innerHTML = '';
+  const items = [
+    ['Encerrados', all.kpi.ENCERRADOS, '#00e59b'],
+    ['Em Aberto', all.kpi.ABERTOS, '#ffb347'],
+    ['Cancelados', all.kpi.CANCELADO, '#ff4566']
+  ];
+  for (const [name, val, color] of items) {
+    const it = document.createElement('div');
+    it.className = 'donut-legend-item';
+    it.innerHTML = '<span class="donut-legend-dot" style="background:' + color + '"></span>' +
+                   '<span class="donut-legend-name">' + name + '</span>' +
+                   '<span class="donut-legend-val">' + fmtNum(val) + '</span>';
+    leg.appendChild(it);
+  }
+}
+
+function renderCelulaList(byCelula) {
+  const cont = document.getElementById('celula-list');
+  cont.innerHTML = '';
+  const entries = Object.entries(byCelula).sort((a, b) => b[1].total - a[1].total);
+  if (entries.length === 0) {
+    cont.innerHTML = '<div class="empty">Sem dados</div>';
+    return;
+  }
+  const max = entries[0][1].total || 1;
+  for (const [name, v] of entries) {
+    const pct = (v.total / max) * 100;
+    const row = document.createElement('div');
+    row.className = 'celula-row';
+    row.innerHTML =
+      '<div class="celula-row-label" title="' + name + '">' + name + '</div>' +
+      '<div class="celula-row-bar-bg"><div class="celula-row-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="celula-row-val">' + fmtNum(v.total) + '</div>';
+    cont.appendChild(row);
+  }
+}
+
+function renderSlaTimeline(rows) {
+  const MES_LABEL = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  // Estrutura: { 2025: [{cumprido,total}*12], 2026: [...] }
+  const buckets = { '2025': Array.from({length:12}, () => ({c:0,t:0})), '2026': Array.from({length:12}, () => ({c:0,t:0})) };
+  for (const r of rows) {
+    if (r.sla === null || r.sla === undefined) continue;
+    if (!r.mes || r.mes < 1 || r.mes > 12) continue;
+    if (r.ano !== '2025' && r.ano !== '2026') continue;
+    const b = buckets[r.ano][r.mes - 1];
+    b.t++;
+    if (r.sla <= 1) b.c++; // cumprido = SLA ≤ 100%
+  }
+
+  const data25 = buckets['2025'].map(b => b.t ? +(b.c / b.t * 100).toFixed(1) : null);
+  const data26 = buckets['2026'].map(b => b.t ? +(b.c / b.t * 100).toFixed(1) : null);
+
+  // Se não tem nenhum dado SLA, mostra mensagem
+  const hasData = [...data25, ...data26].some(v => v !== null);
+
+  if (CHARTS.mini) { CHARTS.mini.destroy(); }
+  const ctx = document.getElementById('mini-chart');
+
+  if (!hasData) {
+    const c = ctx.getContext('2d');
+    c.clearRect(0, 0, ctx.width, ctx.height);
+    c.save();
+    c.fillStyle = '#4a5380';
+    c.font = '700 11px Outfit, sans-serif';
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText('SEM DADOS DE SLA', ctx.width / 2, ctx.height / 2);
+    c.restore();
+    return;
+  }
+
+  // Plugin pra desenhar % em cima de cada ponto
+  const pointValuePlugin = {
+    id: 'pointValuePlugin',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.font = '700 10px Outfit, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      chart.data.datasets.forEach((ds, i) => {
+        const meta = chart.getDatasetMeta(i);
+        if (!meta || meta.hidden) return;
+        ctx.fillStyle = ds.borderColor;
+        meta.data.forEach((pt, idx) => {
+          const v = ds.data[idx];
+          if (v === null || v === undefined) return;
+          ctx.fillText(v.toFixed(0) + '%', pt.x, pt.y - 8);
+        });
+      });
+      ctx.restore();
+    }
+  };
+
+  CHARTS.mini = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: MES_LABEL,
+      datasets: [
+        {
+          label: '2025',
+          data: data25,
+          borderColor: '#3d7fff',
+          backgroundColor: 'rgba(61,127,255,0.10)',
+          tension: 0.35,
+          borderWidth: 2.5,
+          fill: true,
+          pointBackgroundColor: '#3d7fff',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          spanGaps: true,
+          order: 1
+        },
+        {
+          label: '2026',
+          data: data26,
+          borderColor: '#00c9ff',
+          backgroundColor: 'rgba(0,201,255,0.05)',
+          tension: 0.35,
+          borderWidth: 2.5,
+          fill: false,
+          pointBackgroundColor: '#00c9ff',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          spanGaps: true,
+          order: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 16 } },
+      plugins: {
+        legend: {
+          position: 'top', align: 'end',
+          labels: { color: '#8b96bf', font: { size: 10, weight: '600' }, boxWidth: 12, boxHeight: 12 }
+        },
+        tooltip: {
+          backgroundColor: '#0a0e1f', borderColor: '#1c2240', borderWidth: 1,
+          titleColor: '#e8eeff', bodyColor: '#8b96bf', padding: 10,
+          callbacks: {
+            label: c => c.dataset.label + ': ' + (c.parsed.y !== null ? c.parsed.y.toFixed(1) + '%' : 'sem dados')
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#8b96bf', font: { size: 10, weight: '600' } }, grid: { display: false } },
+        y: {
+          ticks: { color: '#4a5380', font: { size: 10 }, callback: v => v + '%' },
+          grid: { color: 'rgba(28,34,64,0.5)' },
+          min: 0, max: 100
+        }
+      }
+    },
+    plugins: [pointValuePlugin]
+  });
+}
+
+function renderCompare(a25, a26) {
+  if (CHARTS.compare) { CHARTS.compare.destroy(); }
+  const ctx = document.getElementById('compare-chart');
+
+  // Plugin inline pra desenhar valores acima das barras
+  const barValuePlugin = {
+    id: 'barValuePlugin',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.font = '700 11px Outfit, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      chart.data.datasets.forEach((ds, i) => {
+        const meta = chart.getDatasetMeta(i);
+        if (!meta || meta.hidden) return;
+        ctx.fillStyle = ds.backgroundColor;
+        meta.data.forEach((bar, idx) => {
+          const v = ds.data[idx];
+          if (v === null || v === undefined) return;
+          ctx.fillText(fmtNum(v), bar.x, bar.y - 4);
+        });
+      });
+      ctx.restore();
+    }
+  };
+
+  CHARTS.compare = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Total', 'Encerrados', 'Em Aberto'],
+      datasets: [
+        { label: '2025', data: [a25.kpi.TOTAL, a25.kpi.ENCERRADOS, a25.kpi.ABERTOS],
+          backgroundColor: '#3d7fff', borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.6 },
+        { label: '2026', data: [a26.kpi.TOTAL, a26.kpi.ENCERRADOS, a26.kpi.ABERTOS],
+          backgroundColor: '#00c9ff', borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.6 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },
+      plugins: {
+        legend: {
+          position: 'top', align: 'end',
+          labels: { color: '#8b96bf', font: { size: 10, weight: '600' }, boxWidth: 12, boxHeight: 12 }
+        },
+        tooltip: {
+          backgroundColor: '#0a0e1f', borderColor: '#1c2240', borderWidth: 1,
+          titleColor: '#e8eeff', bodyColor: '#8b96bf', padding: 10,
+          callbacks: { label: c => c.dataset.label + ': ' + fmtNum(c.parsed.y) }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#8b96bf', font: { size: 11, weight: '600' } }, grid: { display: false } },
+        y: { ticks: { color: '#4a5380', font: { size: 10 }, callback: v => fmtNum(v) }, grid: { color: 'rgba(28,34,64,0.5)' }, beginAtZero: true }
+      }
+    },
+    plugins: [barValuePlugin]
+  });
+}
+
+function renderCritical(byCelula) {
+  const cont = document.getElementById('critical-list');
+  cont.innerHTML = '';
+  const entries = Object.entries(byCelula)
+    .map(([n, v]) => ({ n, abertos: v.ABERTOS }))
+    .filter(e => e.abertos > 0)
+    .sort((a, b) => b.abertos - a.abertos)
+    .slice(0, 5);
+
+  if (entries.length === 0) {
+    cont.innerHTML = '<div class="empty">Nenhuma em aberto</div>';
+    return;
+  }
+  const max = entries[0].abertos || 1;
+  for (const e of entries) {
+    const pct = (e.abertos / max) * 100;
+    const row = document.createElement('div');
+    row.className = 'critical-row';
+    row.innerHTML =
+      '<div class="critical-label" title="' + e.n + '">' + e.n + '</div>' +
+      '<div class="critical-bar-bg"><div class="critical-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="critical-val">' + fmtNum(e.abertos) + '</div>';
+    cont.appendChild(row);
+  }
+}
+
+function renderGrupoPct(byGrupo) {
+  const cont = document.getElementById('grupo-pct-list');
+  cont.innerHTML = '';
+  const entries = Object.entries(byGrupo)
+    .map(([n, v]) => ({ n, total: v.total, encerrados: v.ENCERRADOS, pct: v.total ? (v.ENCERRADOS / v.total * 100) : 0 }))
+    .filter(e => e.total >= 5) // ignora grupos com menos de 5 chamados (ruído estatístico)
+    .sort((a, b) => b.pct - a.pct);
+
+  if (entries.length === 0) {
+    cont.innerHTML = '<div class="empty">Sem dados</div>';
+    return;
+  }
+
+  for (const e of entries) {
+    let cls = 'good';
+    if (e.pct < 50) cls = 'bad';
+    else if (e.pct < 80) cls = 'mid';
+    const row = document.createElement('div');
+    row.className = 'grupo-pct-row';
+    row.innerHTML =
+      '<div class="grupo-pct-label" title="' + e.n + ' (' + e.encerrados + ' de ' + e.total + ')">' + e.n + '</div>' +
+      '<div class="grupo-pct-bar-bg"><div class="grupo-pct-bar-fill ' + cls + '" style="width:' + e.pct + '%"></div></div>' +
+      '<div class="grupo-pct-val ' + cls + '">' + e.pct.toFixed(0) + '%</div>';
+    cont.appendChild(row);
+  }
+}
+
+function render() {
+  const all = aggregate(DATA);
+  const r25 = DATA.filter(d => d.ano === '2025');
+  const r26 = DATA.filter(d => d.ano === '2026');
+  const a25 = aggregate(r25);
+  const a26 = aggregate(r26);
+
+  renderKPIs(all, a25, a26);
+  renderDonutStatus(all);
+  renderCelulaList(all.byCelula);
+  renderGrupoPct(all.byGrupo);
+  renderSlaTimeline(DATA);
+  renderCompare(a25, a26);
+  renderCritical(a26.byCelula);
+}
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+function updateClock() {
+  const d = new Date();
+  document.getElementById('clock').textContent = pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+  const wd = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'][d.getDay()];
+  const mo = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'][d.getMonth()];
+  document.getElementById('clock-date').textContent = wd + ', ' + d.getDate() + ' DE ' + mo + ' DE ' + d.getFullYear();
+}
+
+function fmtTimestamp() {
+  const d = new Date();
+  return 'ATUALIZADO ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+
+async function loadFromSheets() {
+  const loader = document.getElementById('loader');
+  const errorBox = document.getElementById('error-box');
+  errorBox.classList.remove('show');
+  loader.style.display = 'flex';
+  try {
+    const url = SHEETS_CSV_URL + (SHEETS_CSV_URL.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    const resp = await fetch(url, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const text = await resp.text();
+    const raw = parseCSV(text);
+    DATA = raw.map(mapRow).filter(Boolean);
+    if (DATA.length === 0) throw new Error('Nenhum chamado encontrado na planilha. Verifique se os cabeçalhos estão corretos (CÓDIGO, CELULA, GRUPO C, STATUS C, ANO).');
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('last-sync').textContent = fmtTimestamp();
+    render();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('error-msg').textContent = err.message + '\n\nVerifique sua conexão e se a planilha está publicada no Google Sheets como CSV.';
+    errorBox.classList.add('show');
+  } finally {
+    loader.style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateClock();
+  setInterval(updateClock, 1000);
+  loadFromSheets();
+  setInterval(loadFromSheets, REFRESH_MINUTES * 60 * 1000);
+});
+</script>
+</body>
+</html>
