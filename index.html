@@ -172,6 +172,7 @@ body::before {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 .panel-head {
   display: flex; align-items: center;
@@ -194,7 +195,7 @@ body::before {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: clamp(6px, 0.8vw, 12px);
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
 .kpi-card {
   background: var(--panel);
@@ -242,12 +243,13 @@ body::before {
 /* MAIN GRID — 3 colunas × 2 linhas (6 painéis uniformes) */
 .main {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   column-gap: clamp(6px, 0.8vw, 12px);
   row-gap: clamp(10px, 1.5vh, 18px);
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
+  align-content: stretch;
 }
 
 /* DONUT */
