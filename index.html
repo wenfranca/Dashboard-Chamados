@@ -417,9 +417,10 @@ body::before {
 .loader {
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(5,8,20,0.96);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
   gap: 16px;
 }
+.loader.show { display: flex; }
 .loader-spinner {
   width: 48px; height: 48px;
   border: 3px solid var(--rim);
@@ -1145,7 +1146,7 @@ async function loadFromSheets() {
   const syncBtn = document.getElementById('sync-btn');
   const syncLabel = document.getElementById('sync-btn-label');
   errorBox.classList.remove('show');
-  loader.style.display = 'flex';
+  loader.classList.add('show');
   if (syncBtn) {
     syncBtn.disabled = true;
     syncBtn.classList.add('loading');
@@ -1167,7 +1168,7 @@ async function loadFromSheets() {
     document.getElementById('error-msg').textContent = 'Não foi possível carregar os dados da planilha. ' + (err && err.message ? err.message : '');
     errorBox.classList.add('show');
   } finally {
-    loader.style.display = 'none';
+    loader.classList.remove('show');
     if (syncBtn) {
       syncBtn.disabled = false;
       syncBtn.classList.remove('loading');
@@ -1180,8 +1181,4 @@ document.addEventListener('DOMContentLoaded', () => {
   updateClock();
   setInterval(updateClock, 1000);
   document.getElementById('sync-btn').addEventListener('click', loadFromSheets);
-  loadFromSheets();
-});
-</script>
-</body>
-</html>
+  // Carga manual: usuá
